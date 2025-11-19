@@ -1,145 +1,135 @@
-using System;
-using System.Collections.Generic;
+using UnityEditor;
+using UnityEditor.UIElements;
 using UnityEngine;
+using UnityEngine.UIElements;
+using LocalisationToolset;
 
-/// <summary>
-/// LocalizationManager: Singleton for runtime localization.
-/// Handles loading languages, providing text by key,
-/// firing OnLanguageChanged events, and formatting tokens.
-/// </summary>
-public class LocalizationManager : MonoBehaviour
+public class LocalisationWindow : EditorWindow
 {
-    #region Singleton
-    public static LocalizationManager Instance { get; private set; }
+    int toolbarSelection = 0;
+    string[] tabs = { "CSV Importer", "Settings", "Preview", "TextKeys" };
+    VisualElement root;
 
-    private void Awake()
+
+    [MenuItem("Window/Localisation/LocalisationWindow")]
+    public static void ShowWindow()
     {
-        if (Instance != null && Instance != this)
+        var wnd = GetWindow<LocalisationWindow>();
+        wnd.titleContent = new GUIContent("Localisation");
+    }
+
+    // UI Toolkit initialization
+    private void CreateGUI()
+    {
+        root = rootVisualElement;
+        // Toolbar
+        Toolbar toolbar = new Toolbar();
+        ToolbarMenu menu = new ToolbarMenu();
+        menu.text = tabs[toolbarSelection];
+        menu.menu.AppendAction("CSV Importer", a => SetTab(0));
+        menu.menu.AppendAction("Settings", a => SetTab(1));
+        menu.menu.AppendAction("Preview", a => SetTab(2));
+        menu.menu.AppendAction("TextKeys", a => SetTab(3));
+        toolbar.Add(menu);
+        root.Add(toolbar);
+
+        // Initial tab
+        ShowTab(toolbarSelection);
+    }
+
+    void SetTab(int index)
+    {
+        toolbarSelection = index;
+        ShowTab(index);
+    }
+
+    void ShowTab(int index)
+    {
+        // Clear previous content (except toolbar)
+        if (root.childCount > 1)
         {
-            Destroy(this.gameObject);
-            return;
+            root.RemoveAt(1);
         }
 
-        Instance = this;
-        DontDestroyOnLoad(gameObject);
-    }
-    #endregion
-
-    #region Fields
-    [Header("Default Language")]
-    public string defaultLanguage = "EN";
-
-    // Current active language
-    public string CurrentLanguage { get; private set; }
-
-    // Dictionary holding key -> translated text
-    private Dictionary<string, string> localizationDictionary = new Dictionary<string, string>();
-
-    // Event for UI components to subscribe to
-    public event Action<string> OnLanguageChanged;
-    #endregion
-
-    #region Public Methods
-
-    /// <summary>
-    /// Loads a language at runtime (from JSON, ScriptableObject, or other source)
-    /// </summary>
-    public void LoadLanguage(string language)
-    {
-        CurrentLanguage = language.ToUpper();
-
-        // TODO: Replace with real data loading (JSON/CSV/ScriptableObject)
-        // For now, sample dictionary
-        localizationDictionary = SampleLoadLanguage(CurrentLanguage);
-
-        // Notify subscribers
-        OnLanguageChanged?.Invoke(CurrentLanguage);
-    }
-
-    /// <summary>
-    /// Returns the localized text for a key.
-    /// If missing, returns <KEY> to highlight missing translation.
-    /// </summary>
-    public string GetText(string key)
-    {
-        if (localizationDictionary.TryGetValue(key, out string value))
+        switch (index)
         {
-            return value;
+            case 0: CSVTabGUIClicked(); break;
+            case 1: SettingsTabGUIClicked(); break;
+            case 2: PreviewTabGUIClicked(); break;
+            case 3: KeysTabGUIClicked(); break;
         }
-
-        Debug.LogWarning($"Missing localization key: {key} for language {CurrentLanguage}");
-        return $"<{key}>";
     }
 
-    /// <summary>
-    /// Returns text with token replacements
-    /// Example: "Hello {playerName}" with tokens["playerName"] = "Alex"
-    /// </summary>
-    public string GetText(string key, Dictionary<string, string> tokens)
+    void OpenFilePath()
     {
-        string text = GetText(key);
+       LocalisationManager.Instance.localisationFilePath =  EditorUtility.OpenFilePanel("Select the localisation file", "", "csv");
+        Debug.Log($"Set filepath to {LocalisationManager.Instance.localisationFilePath}");
+        //LoadFilePath(_ve);
+    }
 
-        if (tokens == null) return text;
-
-        foreach (var token in tokens)
+    void CSVTabGUIClicked()
+    {
+        VisualElement container = new VisualElement();
+        container.style.paddingTop = 10;
+        container.style.paddingLeft = 10;
+        Label label = new Label("CSV Importer Tab");
+        container.Add(label);
+        VisualElement container2 = new VisualElement();
+        Button importButton = new Button(OpenFilePath)
         {
-            text = text.Replace($"{{{token.Key}}}", token.Value);
-        }
+            text = "Import CSV file"
+        };
 
-        return text;
+        container.Add(importButton);
+        root.Add(container);
+        
+        LoadFilePath(container2);
     }
 
-    /// <summary>
-    /// Reloads default language
-    /// </summary>
-    public void ReloadDefaultLanguage()
+    void LoadFilePath(VisualElement _ve)
     {
-        LoadLanguage(defaultLanguage);
+        _ve.Clear();
+        _ve.style.paddingTop = 10;
+        _ve.style.paddingLeft = 10;
+        Label label2 = new Label(LocalisationManager.Instance.localisationFilePath);
+        _ve.Add(label2);
+        root.Add(_ve);
+
     }
 
-    #endregion
-
-    #region Private / Sample Data
-    /// <summary>
-    /// Sample dictionary for demo purposes
-    /// Replace with actual CSV/JSON loader
-    /// </summary>
-    private Dictionary<string, string> SampleLoadLanguage(string language)
+    void SettingsTabGUIClicked()
     {
-        var dict = new Dictionary<string, string>();
+        VisualElement container = new VisualElement();
+        container.style.paddingTop = 10;
+        container.style.paddingLeft = 10;
 
-        switch (language)
-        {
-            case "EN":
-                dict["MENU_PLAY"] = "Play";
-                dict["MENU_SETTINGS"] = "Settings";
-                dict["MENU_QUIT"] = "Quit";
-                dict["dlg_intro_001"] = "Hey there! Welcome to the ruins.";
-                break;
+        Label label = new Label("Settings Tab");
+        container.Add(label);
 
-            case "DE":
-                dict["MENU_PLAY"] = "Spielen";
-                dict["MENU_SETTINGS"] = "Einstellungen";
-                dict["MENU_QUIT"] = "Beenden";
-                dict["dlg_intro_001"] = "Hey! Willkommen in den Ruinen.";
-                break;
-
-            case "JP":
-                dict["MENU_PLAY"] = "???";
-                dict["MENU_SETTINGS"] = "??";
-                dict["MENU_QUIT"] = "??";
-                dict["dlg_intro_001"] = "??? ????????";
-                break;
-
-            default:
-                dict["MENU_PLAY"] = "Play";
-                dict["MENU_SETTINGS"] = "Settings";
-                dict["MENU_QUIT"] = "Quit";
-                dict["dlg_intro_001"] = "Hey there!";
-                break;
-        }
-
-        return dict;
+        root.Add(container);
     }
-    #endregion
+
+    void PreviewTabGUIClicked()
+    {
+        VisualElement container = new VisualElement();
+        container.style.paddingTop = 10;
+        container.style.paddingLeft = 10;
+
+        Label label = new Label("Preview Tab");
+        container.Add(label);
+
+        root.Add(container);
+    }
+
+    void KeysTabGUIClicked()
+    {
+        VisualElement container = new VisualElement();
+        container.style.paddingTop = 10;
+        container.style.paddingLeft = 10;
+
+        Label label = new Label("TextKeys Tab");
+        container.Add(label);
+
+        root.Add(container);
+    }
 }

@@ -1,16 +1,33 @@
+using LocalisationToolset;
+using TMPro;
 using UnityEngine;
 
-public class LocalisedText : MonoBehaviour
+namespace LocalisationToolset
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    [RequireComponent(typeof(TextMeshProUGUI))]
+    public class LocalizedText : MonoBehaviour
     {
-        
-    }
+        [SerializeField] private string Key;
+        private TMP_Text _label;
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+        void Awake()
+        {
+            _label = GetComponent<TMP_Text>();
+        }
+        void OnEnable()
+        {
+            LocalisationManager.Instance.OnLanguageChanged += OnLanguageChanged;
+        }
+        void OnDisable()
+        {
+            LocalisationManager.Instance.OnLanguageChanged -= OnLanguageChanged;
+        }
+        void OnLanguageChanged(string lang) => Refresh();
+        public void Refresh()
+        {
+            _label.text = LocalisationManager.Instance.GetText(Key);
+        }
     }
 }
+
+
