@@ -1,0 +1,9 @@
+Key,English,German,Japanese,Speaker,AudioID,Duration,Tags
+MENU_PLAY,Play,Spielen,プレイ,,,,UI
+MENU_SETTINGS,Settings,Einstellungen,設定,,,,UI
+MENU_QUIT,Quit,Beenden,終了,,,,UI
+dlg_intro_001,"Hey there, {playerName}! Welcome to the ruins.","Hey, {playerName}! Willkommen in den Ruinen.","やあ、{playerName}！ 遺跡へようこそ。",Aria,aria_intro_01,3.2,intro
+dlg_intro_002,"Be careful! Monsters lurk ahead.","Sei vorsichtig! Monster lauern.","気を付けて！モンスターが潜んでいる。",Rook,rook_warning_02,2.8,warning
+dlg_shop_001,"Take a look at my wares.","Schau dir meine Waren an.","私の商品を見ていってください。",Shopkeeper,shopkeeper_01,2.5,shop
+dlg_choice_001,"Do you want to go left or right?","Willst du nach links oder rechts gehen?","左に行きますか、それとも右に行きますか？",Narrator,,0,choice
+dlg_choice_002,"Good luck, {playerName}!","Viel Glück, {playerName}!","頑張って、{playerName}！",Narrator,,0,choice
