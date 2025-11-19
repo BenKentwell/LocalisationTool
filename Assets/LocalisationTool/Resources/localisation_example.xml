@@ -1,0 +1,47 @@
+{
+    "MENU_PLAY" : 
+    {
+        "English" : "Play",
+
+    },
+    
+    "MENU_SETTINGS" : 
+    {
+        "English" : "Settings",
+        "German" : "Einstellungen",
+        "Japanese" : "settei"
+    },
+
+    "MENU_QUIT" : 
+    {
+        "English" : "TEMPLATE",
+        "German" : "TEMPLATE",
+        "Japanese" : "TEMPLATE"
+    },
+    "TEMPLATE" : 
+    {
+        "English" : "TEMPLATE",
+        "German" : "TEMPLATE",
+        "Japanese" : "TEMPLATE"
+    },
+    "TEMPLATE" : 
+    {
+        "English" : "TEMPLATE",
+        "German" : "TEMPLATE",
+        "Japanese" : "TEMPLATE"
+    },
+    "TEMPLATE" : 
+    {
+        "English" : "TEMPLATE",
+        "German" : "TEMPLATE",
+        "Japanese" : "TEMPLATE"
+    },
+    "TEMPLATE" : 
+    {
+        "English" : "TEMPLATE",
+        "German" : "TEMPLATE",
+        "Japanese" : "TEMPLATE"
+    },
+
+
+}

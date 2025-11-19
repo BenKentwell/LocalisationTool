@@ -34,12 +34,11 @@ namespace LocalisationToolset
             
         }
 
-        private void Awake()
+        private void Start()
         {
             DontDestroyOnLoad(gameObject);
 
             ChangeLanguage(defaultLanguage);
-
         }
 
         public string GetText(string _key)
