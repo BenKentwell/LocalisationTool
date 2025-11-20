@@ -2,6 +2,9 @@ using System;
 using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine;
+using static UnityEngine.Rendering.DebugUI;
+using UnityEngine.InputSystem;
+using TMPro;
 
 namespace LocalisationToolset
 {
@@ -9,16 +12,18 @@ namespace LocalisationToolset
     public class LocalisationData
     {
         public string LanguageCode;
-        public List<LocalisationEntry> localisationEntries = new List<LocalisationEntry>();
+        public List<LocalisationEntry> LocalisationEntries = new List<LocalisationEntry>();
+        public List<LanguageFont> AllLanguages = new List<LanguageFont>();
 
         public LocalisationData()
         {
-            localisationEntries = new List<LocalisationEntry>();
+            LocalisationEntries = new List<LocalisationEntry>();
+            AllLanguages = new List<LanguageFont>();
         }
 
         public string GetValue(string _key)
         {
-            LocalisationEntry entry = localisationEntries.Find(e => e.key == _key);
+            LocalisationEntry entry = LocalisationEntries.Find(e => e.key == _key);
 
             if(entry != null)
             {
@@ -32,7 +37,7 @@ namespace LocalisationToolset
 
         public void AddEntry(string _key, string _value, int _column)
         {
-            LocalisationEntry entry = localisationEntries.Find(e =>e.key == _key);
+            LocalisationEntry entry = LocalisationEntries.Find(e =>e.key == _key);
 
             if(entry != null)
             {
@@ -41,8 +46,23 @@ namespace LocalisationToolset
             }
 
             entry = new LocalisationEntry(_key, _value);
-            localisationEntries.Add(entry);
+            LocalisationEntries.Add(entry);
         }
+
+        public void AddToAllLanguages(string _newLanguage)
+        {
+            LanguageFont entry = AllLanguages.Find(e => e.key == _newLanguage);
+
+            if (AllLanguages.Contains(entry))
+            {
+                return;
+            }
+            entry = new LanguageFont();
+            entry.key = _newLanguage;
+            entry.value = null;
+            AllLanguages.Add(entry);
+        }
+
     }
 
 
@@ -64,6 +84,23 @@ namespace LocalisationToolset
         public LocalisationEntry() { }
 
         public LocalisationEntry(string _key, string _value)
+        {
+            key = _key;
+            value = _value;
+        }
+    }
+
+    //KeyValue pair for rep
+    [Serializable]
+    public class LanguageFont
+    {
+        public string key;
+
+        public TMP_FontAsset value;
+
+        public LanguageFont() { }
+
+        public LanguageFont(string _key, TMP_FontAsset _value)
         {
             key = _key;
             value = _value;

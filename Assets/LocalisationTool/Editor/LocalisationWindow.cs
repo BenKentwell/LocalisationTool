@@ -75,8 +75,6 @@ public class LocalisationWindow : EditorWindow
                 
     }
 
-   
-
     void PreviewTabGUIClicked()
     {
         VisualElement container = new VisualElement();

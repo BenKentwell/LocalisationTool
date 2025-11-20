@@ -3,6 +3,7 @@ using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 using LocalisationToolset;
+using System.Collections.Generic;
 
 namespace LocalisationToolset
 {
@@ -13,20 +14,18 @@ namespace LocalisationToolset
 
         //Font Objects
         private Object assignedAsset;
-        private ObjectField objectField = new ObjectField();
-
-        [SerializeField] private int m_MySerializedInt = 0;
+        private List<ObjectField> objectFields = new List<ObjectField>();
 
         public void OpenFilePath()
         {
             LocalisationManager.Instance.localisationFilePath = EditorUtility.OpenFilePanel("Select the localisation file", "", "csv");
             Debug.Log($"Set filepath to {LocalisationManager.Instance.localisationFilePath}");
-
+            CSVHandler.CheckForAllLanguages();
+            //LocalisationManager.Instance.ChangeLanguage(LocalisationManager.Instance.defaultLanguage);
         }
 
         public void CSVTabGUIClicked(VisualElement _root)
         {
-
             container.style.paddingTop = 10;
             container.style.paddingLeft = 10;
             Label label = new Label("CSV Importer Tab");
@@ -38,22 +37,30 @@ namespace LocalisationToolset
             };
 
             container.Add(importButton);
-            _root.Add(container);
-
+            
             LoadFilePath(container2, _root);
             FontAsset(_root);
 
-
+            _root.Add(container);
         }
 
         private void FontAsset(VisualElement _root)
         {
-            objectField.value = assignedAsset;
-            objectField.RegisterValueChangedCallback(evt =>
+            foreach(LanguageFont lf in LocalisationManager.Instance.GetLanguageFontData())
             {
-                assignedAsset = evt.newValue;
-            });
-            _root.Add(objectField);
+                Label label = new Label(lf.key);
+                container.Add(label);
+                ObjectField objectField = new ObjectField();
+                
+                objectField.value = lf.value;
+                objectField.RegisterValueChangedCallback(evt =>
+                {
+                    lf.value = (TMPro.TMP_FontAsset)evt.newValue;
+                });
+
+                objectFields.Add(objectField);
+                container.Add(objectField);
+            }
         }
 
         public void LoadFilePath(VisualElement _ve, VisualElement _root)
@@ -64,7 +71,6 @@ namespace LocalisationToolset
             Label label2 = new Label(LocalisationManager.Instance.localisationFilePath);
             _ve.Add(label2);
             _root.Add(_ve);
-
         }
 
         public void SettingsTabGUIClicked(VisualElement _root)

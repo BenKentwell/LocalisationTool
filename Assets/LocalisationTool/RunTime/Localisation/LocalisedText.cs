@@ -17,6 +17,7 @@ namespace LocalisationToolset
         void OnEnable()
         {
             LocalisationManager.Instance.OnLanguageChanged += OnLanguageChanged;
+            
         }
         void OnDisable()
         {
@@ -26,6 +27,7 @@ namespace LocalisationToolset
         public void Refresh()
         {
             _label.text = LocalisationManager.Instance.GetText(Key);
+            _label.font = LocalisationManager.Instance.GetCurrentFont();
         }
     }
 }
